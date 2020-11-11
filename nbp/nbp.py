@@ -8,6 +8,10 @@ class ExchangeRate:
         self.buy_rate = buy_rate
         self.ratio = ratio
 
+    def __str__(self):
+        return f'({self.ratio} {self.currency}\t{self.buy_rate}' \
+               f'\t{self.sell_rate})'
+
 
 class ExchangeRateTable:
     def __init__(self, name, publish_date, rates=None):
@@ -22,6 +26,13 @@ class ExchangeRateTable:
         for rate in self.rates:
             if rate.currency == currency:
                 return rate
+
+    def __getitem__(self, item):
+        result = self.get_rate(item)
+        if result is not None:
+            return result
+        else:
+            raise KeyError(item)
 
 
 def print_header(rate_table):
@@ -47,3 +58,5 @@ if __name__ == '__main__':
     rate_table.add_rate(ExchangeRate('CHF', 4.2838, 4.3704))
     rate_table.add_rate(ExchangeRate('JPY', 3.7483, 3.8241, ratio=100))
     print_table(rate_table)
+    print(f"{rate_table['JPY']}")
+    print(f"{rate_table['UNKNOWN']}")
