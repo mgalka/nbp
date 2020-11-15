@@ -1,30 +1,30 @@
-import datetime as d
+import datetime
 
 
 class ExchangeRate:
-    def __init__(self, currency, sell_rate, buy_rate, ratio=1):
+    def __init__(self, currency, code, ask_rate, bid_rate):
         self.currency = currency
-        self.sell_rate = sell_rate
-        self.buy_rate = buy_rate
-        self.ratio = ratio
+        self.code = code
+        self.ask_rate = ask_rate
+        self.bid_rate = bid_rate
 
     def __str__(self):
-        return f'({self.ratio} {self.currency}\t{self.buy_rate}' \
-               f'\t{self.sell_rate})'
+        return f'<{self.currency}({self.code})\t{self.bid_rate}' \
+               f'\t{self.ask_rate}>'
 
 
 class ExchangeRateTable:
-    def __init__(self, name, publish_date, rates=None):
+    def __init__(self, name, effective_date, rates=None):
         self.name = name
-        self.publish_date = d.datetime.strptime(publish_date, '%Y-%m-%d')
-        self.rates = []
+        self.effective_date = datetime.datetime.strptime(effective_date, '%Y-%m-%d')
+        self.rates = rates if rates is not None else []
 
     def add_rate(self, rate):
         self.rates.append(rate)
 
-    def get_rate(self, currency):
+    def get_rate(self, code):
         for rate in self.rates:
-            if rate.currency == currency:
+            if rate.code == code:
                 return rate
 
     def __getitem__(self, item):
@@ -36,15 +36,15 @@ class ExchangeRateTable:
 
 
 def print_header(rate_table):
-    print(f'Tabela: {rate_table.name}\tData publikacji: '
-          f'{rate_table.publish_date.date()}')
+    print(f'Tabela: {rate_table.name}\tData: '
+          f'{rate_table.effective_date}')
     print('Waluta\tSprz.\tKupno')
 
 
 def print_content(rates):
     for rate in rates:
-        print(f'{rate.ratio} {rate.currency}\t{rate.buy_rate}'
-              f'\t{rate.sell_rate}')
+        print(f'{rate.currency}({rate.code})\t{rate.bid_rate}'
+              f'\t{rate.ask_rate}')
 
 
 def print_table(rate_table):
@@ -54,9 +54,9 @@ def print_table(rate_table):
 
 if __name__ == '__main__':
     rate_table = ExchangeRateTable('C', '2020-11-10')
-    rate_table.add_rate(ExchangeRate('USD', 3.9225, 4.0017))
-    rate_table.add_rate(ExchangeRate('CHF', 4.2838, 4.3704))
-    rate_table.add_rate(ExchangeRate('JPY', 3.7483, 3.8241, ratio=100))
+    rate_table.add_rate(ExchangeRate('dolar amerykański', 'USD', 3.9225, 4.0017))
+    rate_table.add_rate(ExchangeRate('frank szwajcarski', 'CHF', 4.2838, 4.3704))
+    rate_table.add_rate(ExchangeRate('jen japoński', 'JPY', 3.7483, 3.8241))
     print_table(rate_table)
     print(f"{rate_table['JPY']}")
     print(f"{rate_table['UNKNOWN']}")
